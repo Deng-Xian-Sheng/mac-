@@ -1,0 +1,2 @@
+pmset -g custom | grep -w sleep #输出睡眠等待时间
+pmset -g custom | grep -w displaysleep #输出显示屏熄屏时间

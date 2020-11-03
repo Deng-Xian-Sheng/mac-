@@ -1,0 +1,22 @@
+if test -s ./PasswdFile; then #判断PasswdFile文件是否为空
+        PasswdValueRead=$(cat ./PasswdFile)
+        echo $PasswdValueRead | sudo -S pmset -a sleep 30 displaysleep 10 >> ./Logs 2>&1 #实现自动输入sudo密码，后面为开启自动睡眠命令
+        if [ $? -eq 0 ]; then
+                exit 0
+        else
+                echo "您的用户密码错误!"
+                rm -rf ./PasswdFile
+                ./$0
+        fi
+else
+        read -p "请输入用户密码: " PasswdValue
+        echo $PasswdValue > ./PasswdFile
+        echo $PasswdValue | sudo -S pmset -a sleep 30 displaysleep 10 >> ./Logs 2>&1
+        if [ $? -eq 0 ]; then
+                exit 0
+        else
+                echo "您的用户密码输入错误!"
+                rm -rf ./PasswdFile
+                ./$0
+        fi
+fi

@@ -1,0 +1,64 @@
+# encoding:utf-8
+import os
+import sys
+import subprocess
+import re
+  
+def get_process_id(name):
+  child = subprocess.Popen(["pgrep","-f",name],stdout=subprocess.PIPE,shell=False)
+  response = child.communicate()[0] #使用python执行shell命令pgrep -f，并获取结果以得到百度网盘的PID值,判断百度网盘是否启动
+  return response
+pid = get_process_id("BaiduNetdisk")
+
+if not pid:
+	sub = subprocess.Popen("./PmsetCheck", shell=True, stdout=subprocess.PIPE)
+	sub.wait() #调用shell脚本查询电源配置情况。
+
+	PmsetValueList=re.findall(r"\d+\.?\d*",sub.stdout.read()) #格式化./PmsetCheck的输出，提取数字并输出为列表
+
+	BatterySleepList = PmsetValueList[0]
+	AcSleepList = PmsetValueList[1]
+	BatteryDisplaysleepList = PmsetValueList[2]
+	AcDisplaysleepList = PmsetValueList[3] #提取列表中的单个值
+
+	BatterySleepValue = int(''.join(BatterySleepList))
+	AcSleepValue = int(''.join(AcSleepList))
+	BatteryDisplaysleepValue = int(''.join(BatteryDisplaysleepList))
+	AcDisplaysleepValue = int(''.join(AcDisplaysleepList)) #将列表中的值转化为字符串再转化为整形
+
+	if (((BatterySleepValue >10) and (BatterySleepValue <=30)) and ((BatteryDisplaysleepValue >=10) and (BatteryDisplaysleepValue < BatterySleepValue))) and (((AcSleepValue >10) and (AcSleepValue <=30)) and ((AcDisplaysleepValue >=10) and (AcDisplaysleepValue < AcSleepValue))):
+        	sys.exit(1) #判断自动睡眠是否打开
+	else:
+        	sub = subprocess.Popen("./OnAutomaticSleep", shell=True, stdout=subprocess.PIPE) #百度网盘未启动时，检测到自动睡眠未打开，应打开自动睡眠,调用shell脚本./OnAutomaticSleep实现
+        	sub.wait()
+        	Logs = sub.stdout.read()
+        	outlogs = open('./Logs','a')
+        	outlogs.write(Logs)
+        	outlogs.close()
+        	sys.exit(1)
+else:
+	sub = subprocess.Popen("./PmsetCheck", shell=True, stdout=subprocess.PIPE)
+	sub.wait() #同上,调用shell脚本查询电源配置情况
+
+	PmsetValueList=re.findall(r"\d+\.?\d*",sub.stdout.read())
+
+	BatterySleepList = PmsetValueList[0]
+	AcSleepList = PmsetValueList[1]
+	BatteryDisplaysleepList = PmsetValueList[2]
+	AcDisplaysleepList = PmsetValueList[3]
+
+	BatterySleepValue = int(''.join(BatterySleepList))
+	AcSleepValue = int(''.join(AcSleepList))
+	BatteryDisplaysleepValue = int(''.join(BatteryDisplaysleepList))
+	AcDisplaysleepValue = int(''.join(AcDisplaysleepList))
+
+	if ((BatterySleepValue == 0) and ((BatteryDisplaysleepValue >=10) and (BatteryDisplaysleepValue <30))) and ((AcSleepValue == 0) and ((AcDisplaysleepValue >=10) and (AcDisplaysleepValue <30))) :
+        	sys.exit(1) #检测自动睡眠是否关闭
+	else:
+        	sub = subprocess.Popen("./OffAutomaticSleep", shell=True, stdout=subprocess.PIPE) #百度网盘启动时，检测到自动睡眠未关闭，调用shell脚本关闭
+        	sub.wait()
+        	Logs = sub.stdout.read()
+        	outlogs = open('./Logs','a')
+        	outlogs.write(Logs)
+        	outlogs.close()
+        	sys.exit(1)

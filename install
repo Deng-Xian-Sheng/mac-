@@ -1,0 +1,84 @@
+if test -s ./PasswdFile; then
+        PasswdValueRead=$(cat ./PasswdFile)
+	echo "欢迎再次使用本程序!"
+	read -p "确认安装BaiduCloudGuardian吗?[y/n]" UserInput
+	if [ $UserInput = "y" ];then
+        	echo $PasswdValueRead | sudo -S mkdir -p /Users/$USER/BaiduCloudGuardian/ >> ./Logs 2>&1
+		
+		if [ $? -eq 0 ]; then
+                	echo $PasswdValueRead | sudo -S cp ./PythonMain PmsetCheck OffAutomaticSleep OnAutomaticSleep PasswdFile /Users/$USER/BaiduCloudGuardian/ >> ./Logs 2>&1
+                	echo $PasswdValueRead | sudo -S chmod +x /Users/$USER/BaiduCloudGuardian/PmsetCheck /Users/$USER/BaiduCloudGuardian/OffAutomaticSleep /Users/$USER/BaiduCloudGuardian/OnAutomaticSleep >> ./Logs 2>&1
+                
+                	echo $PasswdValueRead | sudo -S echo '        <key>ProgramArguments</key>' >> ./BaiduCloudGuardian.plist
+                	echo $PasswdValueRead | sudo -S echo '        <array>' >> BaiduCloudGuardian.plist
+                	echo $PasswdValueRead | sudo -S echo '                <string>python</string>' >> ./BaiduCloudGuardian.plist
+                	echo $PasswdValueRead | sudo -S echo "                <string>/Users/$USER/BaiduCloudGuardian/PythonMain</string>" >> ./BaiduCloudGuardian.plist
+                	echo $PasswdValueRead | sudo -S echo '        </array>' >> ./BaiduCloudGuardian.plist
+                	echo $PasswdValueRead | sudo -S echo '        <key>StandardErrorPath</key>' >> ./BaiduCloudGuardian.plist
+                	echo $PasswdValueRead | sudo -S echo "        <string>/Users/$USER/BaiduCloudGuardian/Logs</string>" >> ./BaiduCloudGuardian.plist #生成launchd的配置文件
+                	echo "正在安装，请稍后。。。"
+                	echo $PasswdValueRead | sudo -S echo '        <key>StandardInPath</key>' >> ./BaiduCloudGuardian.plist
+                	echo $PasswdValueRead | sudo -S echo "        <string>/Users/$USER/BaiduCloudGuardian/Logs</string>" >> ./BaiduCloudGuardian.plist
+                	echo $PasswdValueRead | sudo -S echo '        <key>StandardOutPath</key>' >> ./BaiduCloudGuardian.plist
+                	echo $PasswdValueRead | sudo -S echo "        <string>/Users/$USER/BaiduCloudGuardian/Logs</string>" >> ./BaiduCloudGuardian.plist
+                	echo $PasswdValueRead | sudo -S echo '</dict>' >> ./BaiduCloudGuardian.plist
+                	echo $PasswdValueRead | sudo -S echo '</plist>' >> ./BaiduCloudGuardian.plist
+
+                	echo $PasswdValueRead | sudo -S cp ./BaiduCloudGuardian.plist ~/Library/LaunchAgents/ >> ./Logs 2>&1 #将配置文件转移到launchd配置文件目录
+                	echo $PasswdValueRead | sudo -S launchctl load ~/Library/LaunchAgents/BaiduCloudGuardian.plist >> ./Logs 2>&1 #加载配置文件
+			echo $PasswdValueRead | sudo -S cp ./Logs /Users/$USER/BaiduCloudGuardian/
+			echo $PasswdValueRead | sudo -S chown -R $USER /Users/$USER/ #由于使用root修改了用户家目录，重新赋予用户权限
+                	echo "安装成功！"
+			exit 0
+        	else
+                	echo "您的用户密码错误!"
+                	rm -rf ./PasswdFile
+                	./$0
+        	fi
+	else
+		echo "程序已退出！"
+		exit 0
+	fi
+else	
+        echo "欢迎使用本程序!"
+	read -p "请输入用户密码: " PasswdValue
+        echo $PasswdValue > ./PasswdFile
+        read -p "确认安装BaiduCloudGuardian吗?[y/n]" UserInput
+        if [ $UserInput = "y" ];then
+                echo $PasswdValue | sudo -S mkdir -p /Users/$USER/BaiduCloudGuardian/ >> ./Logs 2>&1
+
+                if [ $? -eq 0 ]; then
+                        echo $PasswdValue | sudo -S cp ./PythonMain PmsetCheck OffAutomaticSleep OnAutomaticSleep PasswdFile /Users/$USER/BaiduCloudGuardian/ >> ./Logs 2>&1
+                        echo $PasswdValue | sudo -S chmod +x /Users/$USER/BaiduCloudGuardian/PmsetCheck /Users/$USER/BaiduCloudGuardian/OffAutomaticSleep /Users/$USER/BaiduCloudGuardian/OnAutomaticSleep >> ./Logs 2>&1
+
+                        echo $PasswdValue | sudo -S echo '        <key>ProgramArguments</key>' >> ./BaiduCloudGuardian.plist
+                        echo $PasswdValue | sudo -S echo '        <array>' >> ./BaiduCloudGuardian.plist
+                        echo $PasswdValue | sudo -S echo '                <string>python</string>' >> ./BaiduCloudGuardian.plist
+                        echo $PasswdValue | sudo -S echo "                <string>/Users/$USER/BaiduCloudGuardian/PythonMain</string>" >> ./BaiduCloudGuardian.plist
+                        echo $PasswdValue | sudo -S echo '        </array>' >> ./BaiduCloudGuardian.plist
+                        echo $PasswdValue | sudo -S echo '        <key>StandardErrorPath</key>' >> ./BaiduCloudGuardian.plist
+                        echo $PasswdValue | sudo -S echo "        <string>/Users/$USER/BaiduCloudGuardian/Logs</string>" >> ./BaiduCloudGuardian.plist
+                        echo "正在安装，请稍后。。。"
+                        echo $PasswdValue | sudo -S echo '        <key>StandardInPath</key>' >> ./BaiduCloudGuardian.plist
+                        echo $PasswdValue | sudo -S echo "        <string>/Users/$USER/BaiduCloudGuardian/Logs</string>" >> ./BaiduCloudGuardian.plist
+                        echo $PasswdValue | sudo -S echo '        <key>StandardOutPath</key>' >> ./BaiduCloudGuardian.plist
+                        echo $PasswdValue | sudo -S echo "        <string>/Users/$USER/BaiduCloudGuardian/Logs</string>" >> ./BaiduCloudGuardian.plist
+                        echo $PasswdValue | sudo -S echo '</dict>' >> ./BaiduCloudGuardian.plist
+                        echo $PasswdValue | sudo -S echo '</plist>' >> ./BaiduCloudGuardian.plist
+
+                        echo $PasswdValue | sudo -S cp ./BaiduCloudGuardian.plist ~/Library/LaunchAgents/ >> ./Logs 2>&1
+                        echo $PasswdValue | sudo -S launchctl load ~/Library/LaunchAgents/BaiduCloudGuardian.plist >> ./Logs 2>&1
+			echo $PasswdValue | sudo -S cp ./Logs /Users/$USER/BaiduCloudGuardian/
+			echo $PasswdValue | sudo -S chown -R $USER /Users/$USER/
+                        echo "安装成功！"
+			exit 0
+                else
+                        echo "您的用户密码输入错误!"
+                        rm -rf ./PasswdFile
+                        ./$0
+                fi
+        else
+                echo "程序已退出！"
+                exit 0
+	fi 
+fi
